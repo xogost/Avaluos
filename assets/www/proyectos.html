@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+        </title>
+        <link rel="stylesheet" href="css/jquery.mobile-1.1.1.min.css" />
+        <link rel="stylesheet" href="css/proyectos.css" />
+        <style>
+            /* App custom styles */
+        </style>
+        <script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+        <script src="js/jquery-1.7.2.min.js">
+        </script>
+        <script src="js/jquery.mobile-1.1.1.min.js">
+        </script>
+        <script src="js/proyectos.js">
+        </script>
+        <script type="text/javascript">
+            
+            //Cuando el dispositivo este listo y cargado el phonegap
+            document.addEventListener("deviceready", onDeviceReady, false);
+
+            var db;
+            var proyecto_id;
+
+            function onDeviceReady() {
+                db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+
+                proyecto_id = window.location.href.split("=")[1];
+                
+                if(proyecto_id != undefined)
+                {
+                    db.transaction(selectProyecto, errorInserIntoProyectos);
+                }
+                else
+                    $("#borrar").attr("display","none");
+            }
+
+            function saveInsert () {
+                db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+
+                if(proyecto_id == undefined)
+                {
+                    db.transaction(InsertIntoProyectos,[], successInsertInto, errorInserIntoProyectos);
+                }
+                else
+                {
+                    db.transaction(UpdateProyectos,[], successInsertInto, errorInserIntoProyectos);   
+                }
+            }
+
+            function selectProyecto (tx) {
+                var select ="SELECT * FROM PROYECTOS WHERE ID = " + proyecto_id;
+                tx.executeSql(select, [], successSelect, errorSelect);
+            }
+
+            function successSelect (tx, result) {
+                var cantidadFilas = result.rows.length;
+                
+                for (var i = 0; i < result.rows.length; i++) {
+                    $("#no_contacto").val(result.rows.item(i).NO_CONTACTO);
+                    $("#proyecto").val(result.rows.item(i).PROYECTO);
+                    $("#director").val(result.rows.item(i).DIRECTOR);
+                    $("#celular").val(result.rows.item(i).CELULAR);
+                    $("#telefono").val(result.rows.item(i).TELEFONO);
+                    $("#direccion").val(result.rows.item(i).DIRECCION);
+                    $("#no_avaluos").val(result.rows.item(i).NO_AVALUOS);
+                    $("#estado").val(result.rows.item(i).ESTADO).selectmenu("refresh");
+                    $("#observacion").val(result.rows.item(i).OBSERVACION);
+                };
+            }
+            function dropProyecto () {
+                db.transaction(DeleteProyecto,[], successInsertInto, errorInserIntoProyectos);   
+            }
+
+            function DeleteProyecto (tx) {
+                var delProyecto = "DELETE FROM PROYECTOS WHERE ID = " + proyecto_id;
+                tx.executeSql(delProyecto); 
+            }
+            function errorSelect() {
+                alert("Error al cargar el proyecto");
+            }
+
+            function successInsertInto () {
+                alert("El proceso finalizo correctamente.");
+            }
+            //Execute insert into
+            function InsertIntoProyectos(tx) {
+
+                insertInto = "INSERT INTO PROYECTOS (NO_CONTACTO, PROYECTO, DIRECTOR, CELULAR, TELEFONO, DIRECCION, NO_AVALUOS, ESTADO, OBSERVACION ) VALUES (";
+                insertInto += $("#no_contacto").val() + ", '" + $("#proyecto").val() + "', '";
+                insertInto += $("#director").val() + "', '" + $("#celular").val() + "', ' ";
+                insertInto += $("#telefono").val() + "', '" + $("#direccion").val() + "', ";
+                insertInto += $("#no_avaluos").val() + ", " + $("#estado").val() + ", ' ";
+                insertInto += $("#observacion").val() + "')";
+                
+                tx.executeSql(insertInto);
+
+            }
+            function UpdateProyectos (tx) {
+                update = "UPDATE PROYECTOS";
+                update += " SET NO_CONTACTO = " + $("#no_contacto").val();
+                update += ", PROYECTO = '" + $("#proyecto").val();
+                update += "', DIRECTOR = '" + $("#director").val();
+                update += "', TELEFONO = '" + $("#telefono").val();
+                update += "', CELULAR = '" + $("#celular").val();
+                update += "', DIRECCION = '" + $("#direccion").val();
+                update += "', NO_AVALUOS = " + $("#no_avaluos").val();
+                update += ", ESTADO = " + $("#estado").val();
+                update += ", OBSERVACION = '" + $("#observacion").val();
+
+                update += "' WHERE ID = " + proyecto_id;
+
+                tx.executeSql(update);
+            }
+            function errorInserIntoProyectos() {
+                alert("Error al ejecutar proceso");
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Home -->
+        <div data-role="page" id="page1">
+            <div data-theme="a" data-role="header">
+                <h4>
+                    Proyectos
+                </h4>
+                <a data-role="button" data-rel="back" data-transition="fade" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
+                    Atras
+                </a>
+            </div>
+            <div data-role="content" style="padding: 15px">
+                <div data-role="navbar" data-iconpos="left">
+                    <ul>
+                        <li>
+                            <a href="#page1" data-theme="" data-icon="home">
+                                Menu
+                            </a>
+                        </li>
+                        <li>
+                            <a href="proyectosView.html" data-theme="a" data-icon="grid" class="ui-btn-active ui-state-persist">
+                                Proyectos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#page1" data-theme="" data-icon="check">
+                                Avaluos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#page1" data-theme="" data-icon="star">
+                                Vistias
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="no_contacto">
+                            No. Contacto
+                        </label>
+                        <input name="" id="no_contacto" required="required" placeholder="Escriba texto aquí..." value="" type="number" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="proyecto">
+                            Proyecto
+                        </label>
+                        <input name="" id="proyecto" required="required" placeholder="Escriba texto aquí..." value="" type="text" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="director">
+                            Director
+                        </label>
+                        <input name="" id="director" placeholder="Escriba texto aquí..." value="" type="text" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="celular">
+                            Celular
+                        </label>
+                        <input name="" id="celular" placeholder="Número de Celular..." type="tel" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="telefono">
+                            Teléfono
+                        </label>
+                        <input name="" id="telefono" placeholder="Número de Teléfono" type="tel" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="direccion">
+                            Dirección
+                        </label>
+                        <input name="" id="direccion" placeholder="Dirección aquí..." value="" type="text" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="no_avaluos">
+                            No. Avaluos
+                        </label>
+                        <input name="" id="no_avaluos" required="required" placeholder="Número de avaluos..." value="" type="number" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="observacion">
+                            Observación
+                        </label>
+                        <textarea name="" id="observacion" placeholder="Texto aquí...">
+                        </textarea>
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="estado">
+                        Estado:
+                    </label>
+                    <select data-native-menu="false" name="estado" id="estado">
+                        <option value="01">
+                            Seleccione
+                        </option>
+                        <option value="0">
+                            Ejecucion
+                        </option>
+                        <option value="1">
+                            Detenido
+                        </option>
+                    </select>
+                </div>
+                <input type="submit" id="guardar" data-icon="plus" onclick="saveInsert();" data-iconpos="left" value="Guardar" />
+                <input type="submit" id="borrar" onclick="dropProyecto();" data-icon="minus" data-iconpos="left" value="Eliminar" />
+            </div>
+        </div>
+        <script>
+            //App custom javascript
+        </script>
+    </body>
+</html>

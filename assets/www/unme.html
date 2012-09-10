@@ -1,0 +1,110 @@
+<!DOCTYPE html> 
+<html style="height: 100%;"> 
+<head> 
+	<title>Avaluos - Inicio de Sesion</title> 
+	
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" charset="UTF-8"> 
+
+	<link rel="stylesheet" href="css/jquery.mobile-1.1.1.min.css" />
+	<link rel="stylesheet" href="css/themes/jctheme.min.css" />
+
+	<script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+	<script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+	<script src="js/jquery.mobile-1.1.1.min.js"></script>
+	<style type="text/css">
+
+	#content input[type="text"], #list{display: block; width: 90%; margin: 0 auto;}
+	#content button{display: block; width: 90%; margin: 0 auto;}
+	#content img{margin: 0 auto;}
+	#content h2 {text-decoration: bold; display: block; width: 90%; margin: 0 auto;}
+	#content article {text-decoration: bold; display: block; width: 90%; margin: 0 auto; text-align: justify;}
+	#content #home { width: 100%;  text-align: center;}
+	.collapsibleDiv { background-color: #fff; border-left: 1px dashed #A3A3A3; border-right: 1px dashed #A3A3A3; }
+	</style>
+	<script type="text/javascript">
+		
+		document.addEventListener("deviceready", onDeviceReady, false);
+
+		function errorDB (err) {
+			alert("Database error");
+		}
+
+		function queryUsuarios (tx) {
+
+			tx.executeSql("SELECT * FROM USUARIOS", [], queryCorrecto, errorDB);
+
+		}
+
+		function queryCorrecto (tx, result) {
+			
+			var cantidadFilas = result.rows.length;
+			alert(cantidadFilas);
+			var UsuariosList = "";
+			for (var i = 0; i < result.rows.length; i++) {
+				UsuariosList += "<li>" + result.rows.item(i).NOMBRE + "</li>";
+			};
+			$("#ulusuarios").html(UsuariosList);
+		}
+
+		function onDeviceReady () {
+			var db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+			db.transaction(queryUsuarios, errorDB);
+
+		}
+
+	</script>
+</head> 
+<body style="width=100%; height: 100%;"> 
+
+<div data-role="page">
+
+	<div  data-role="header" data-theme="b">
+		<h1>BIENVENIDO</h1>
+	</div><!-- /header -->
+
+	<div id="content" data-role="content">
+		<div id="home"><img src="img/home.png" /></div>
+		<h2>Hey!</h2>
+		<article>Selecciona una de las siguientes opciones de aucerdo al lo que se requiere para continuar con el proceso.</article>
+		<br/>
+		<div id="list" data-role="collapsible-set">
+			<div  class="collapsibleDiv" data-role="collapsible">
+	   			<h3>Avaluos</h3>
+	   			<div >
+	   				<ol id="ulusuarios">
+	   					<li>Avaluo Numero 1</li>
+	   					<li>Avaluo Numero 2</li>
+	   					<li>Avaluo Numero 3</li>
+	   					<li>Avaluo Numero 4</li>
+	   				</ol>
+	   			</div>
+	   		</div>
+	   		<div class="collapsibleDiv" data-role="collapsible">
+	   			<h3>Proyectos</h3>
+	   			<div >
+	   				<ol>
+	   					<li>Proyecto Numero 1</li>
+	   					<li>Proyecto Numero 2</li>
+	   					<li>Proyecto Numero 3</li>
+	   					<li>Proyecto Numero 4</li>
+	   				</ol>
+	   			</div>
+	   		</div>
+	   		<div class="collapsibleDiv" data-role="collapsible">
+	   			<h3>Imagenes</h3>
+	   			<div >
+	   				<ol>
+	   					<li>Imagen Numero 1</li>
+	   					<li>Imagen Numero 2</li>
+	   					<li>Imagen Numero 3</li>
+	   					<li>Imagen Numero 4</li>
+	   				</ol>
+	   			</div>
+			</div>
+		</div>
+	</div><!-- /content -->
+
+</div><!-- /page -->
+
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" charset="UTF-8"> 
+        <title>
+            Menu - Avaluos
+        </title>
+
+        <link rel="stylesheet" href="css/jquery.mobile-1.1.1.min.css" />
+        <link rel="stylesheet" href="css/menu.css" />
+        <style>
+            /* App custom styles */
+        </style>
+        <script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+        <script src="js/jquery-1.7.2.min.js">
+        </script>
+        <script src="js/jquery.mobile-1.1.1.min.js">
+        </script>
+        <script src="js/menu.js">
+        </script>
+        <SCRIPT TYPE="text/javascript">
+
+            $(function () {
+            });
+            
+        </SCRIPT>
+    </head>
+    <body>
+        <!-- Home -->
+        <div data-role="page" id="page1">
+            <div data-theme="a" data-role="header">
+                <h4>
+                    Menu Avaluos
+                </h4>
+            </div>
+            <div data-role="content" style="padding: 15px">
+                <ul data-role="listview" data-divider-theme="a" data-inset="false">
+                    <li data-role="list-divider" role="heading">
+                        Seleccione Opcion:
+                    </li>
+                    <li data-theme="c">
+                        <a id="aProyectos" href="proyectosView.html" rel="external" onclick="" data-transition="flip">
+                            Proyectos
+                            <span class="ui-li-count">
+                                Ir
+                            </span>
+                        </a>
+                    </li>
+                    <li data-theme="c">
+                        <a href="avaluosView.html" rel="external" data-transition="flip">
+                            Avaluo
+                            <span class="ui-li-count">
+                                Ir
+                            </span>
+                        </a>
+                    </li>
+                    <li data-theme="c">
+                        <a href="#page1" data-transition="flip">
+                            Visitas
+                            <span class="ui-li-count">
+                                Fotos
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <script>
+            //App custom javascript
+        </script>
+    </body>
+</html>
