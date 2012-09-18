@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+        </title>
+        <link rel="stylesheet" href="css/jquery.mobile-1.1.1.min.css" />
+        <link rel="stylesheet" href="css/proyectos.css" />
+        <style>
+            /* App custom styles */
+        </style>
+        <script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+        <script src="js/jquery-1.7.2.min.js">
+        </script>
+        <script src="js/jquery.mobile-1.1.1.min.js">
+        </script>
+        <script src="js/proyectos.js">
+        </script>
+        <script type="text/javascript">
+            
+            //Cuando el dispositivo este listo y cargado el phonegap
+            document.addEventListener("deviceready", onDeviceReady, false);
+
+            var db;
+            var visita_id;
+
+            function onDeviceReady() {
+                db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+
+                visita_id = window.location.href.split("=")[1];
+                
+                db.transaction(selectProyectos, errorAvaluos);
+
+                if(visita_id != undefined)
+                    db.transaction(selectAvaluos, errorAvaluos);
+                else
+                    $("#borrar").attr("display","none");
+            }
+
+            function saveInsert () {
+                db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+
+                if(visita_id == undefined)
+                {
+                    db.transaction(InsertAvaluos,[], successInsert, errorAvaluos);
+                }
+                else
+                {
+                    db.transaction(UpdateAvaluos,[], successInsert, errorAvaluos);   
+                }
+            }
+
+            function dropAvaluo () {
+                db.transaction(DeleteAvaluos,[], successInsert, errorAvaluos);   
+            }
+
+            function DeleteAvaluos (tx) {
+                var delAvaluo = "DELETE FROM VISITAS WHERE ID = " + visita_id;
+                tx.executeSql(delAvaluo); 
+            }
+
+            function selectAvaluos (tx) {
+                var select ="SELECT * FROM VISITAS WHERE ID = " + visita_id;
+                tx.executeSql(select, [], successSelect, errorSelect);
+            }
+
+            function selectProyectos (tx) {
+                var select ="SELECT * FROM PROYECTOS";
+                tx.executeSql(select, [], loadProjects, errorSelectProjects);
+            }
+
+            function errorSelectProjects () {
+                alert("No se pueden cargar los proyectos existentes.");
+            }
+
+            function loadProjects (tx, result) {
+                var cantidadFilas = result.rows.length;
+                
+                for (var i = 0; i < result.rows.length; i++) {
+                    $("#proyecto").append("<option value=" + result.rows.item(i).ID + "> " + result.rows.item(i).PROYECTO + " </option>");
+                    
+                };
+                $("#proyecto").selectmenu("refresh")
+            }
+
+            function successSelect (tx, result) {
+                var cantidadFilas = result.rows.length;
+                
+                for (var i = 0; i < result.rows.length; i++) {
+                    $("#proyecto").val(result.rows.item(i).PROYECTO).selectmenu("refresh");
+                    $("#no_avaluo").val(result.rows.item(i).NO_AVALUO);
+                    $("#proposito").val(result.rows.item(i).PROPOSITO);
+                };
+            }
+
+            function errorSelect() {
+                alert("Error al cargar el avaluo.");
+            }
+
+            function successInsert () {
+                alert("El proceso finalizo correctamente.");
+            }
+            //Execute insert into
+            function InsertAvaluos(tx) {
+
+                insertInto = "INSERT INTO VISITAS (PROYECTO, NO_AVALUO, NOMBRE, RUTA, ORDEN) VALUES (";
+                insertInto += $("#proyecto").val() + ", " + $("#no_avaluo").val() + ", '";
+                insertInto += $("#nombre").val() + ", '" + $("#ruta").val() + "', " + $("#orden").val() + ");";
+                
+                tx.executeSql(insertInto);
+
+            }
+            function UpdateAvaluos (tx) {
+                update = "UPDATE VISITAS";
+                update += " SET PROYECTO = " + $("#proyecto").val();
+                update += ", NO_AVALUO = " + $("#no_avaluo").val();
+                update += ", NOMRBE = '" + $("#nombre").val();
+                update += ", RUTA = '" + $("#ruta").val();
+                update += ", ORDEN = '" + $("#orden").val();
+
+                update += "' WHERE ID = " + visita_id;
+
+                tx.executeSql(update);
+            }
+            function errorAvaluos() {
+                alert("Error al ejecutar proceso");
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Home -->
+        <div data-role="page" id="page1">
+            <div data-theme="a" data-role="header">
+                <h4>
+                    Visitas
+                </h4>
+                <a data-role="button" data-rel="back" data-transition="fade" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
+                    Atras
+                </a>
+            </div>
+            <div data-role="content" style="padding: 15px">
+                <div data-role="navbar" data-iconpos="left">
+                    <ul>
+                        <li>
+                            <a href="#page1" data-theme="" data-icon="home">
+                                Menu
+                            </a>
+                        </li>
+                        <li>
+                            <a href="proyectosView.html" data-theme="a" data-icon="grid">
+                                Proyectos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#page1" data-theme="" data-icon="check" class="ui-btn-active ui-state-persist">
+                                Avaluos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#page1" data-theme="" data-icon="star">
+                                Vistias
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="proyecto">
+                        Proyecto:
+                    </label>
+                    <select id="proyecto" data-native-menu="false" name="selectmenu1" id="selectmenu1">
+                        <option value="0">
+                            Seleccione
+                        </option>
+                    </select>
+                </div>
+                <div data-role="fieldcontain">
+                    <label for="avaluo">
+                        No. Avaluo:
+                    </label>
+                    <select id="avaluo" data-native-menu="false" name="selectmenu1" id="selectmenu1">
+                        <option value="0">
+                            Seleccione
+                        </option>
+                    </select>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="nombre">
+                            Nombre
+                        </label>
+                        <input name="" id="nombre" placeholder="Nombre Imagen..." value="" type="text" />
+                    </fieldset>
+                </div>
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="orden">
+                            No. Orden
+                        </label>
+                        <input name="" id="orden" placeholder="Numero de documentos..." value="" type="number" />
+                    </fieldset>
+                </div>
+                <input type="hidden" id="ruta" value="" />
+                <input type="button" id="carpturare" onclick="capturar();" data-icon="plus" data-iconpos="left" value="Capturar Foto" />
+                <br/>
+                <input type="submit" id="guardar" onclick="saveInsert();" data-icon="plus" data-iconpos="left" value="Guardar" />
+                <input type="submit" id="borrar" onclick="dropAvaluo();" data-icon="minus" data-iconpos="left" value="Eliminar" />
+            </div>
+        </div>
+        <script>
+            //App custom javascript
+        </script>
+    </body>
+</html>

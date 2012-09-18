@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+        </title>
+        <link rel="stylesheet" href="css/jquery.mobile-1.1.1.min.css" />
+        <!--<link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/jquery.mobile/1.1.1/jquery.mobile-1.1.1.min.css" />-->
+        <link rel="stylesheet" href="css/AvaluosView.css" />
+        <style>
+            /* App custom styles */
+        </style>
+        <script type="text/javascript" charset="utf-8" src="cordova-2.0.0.js"></script>
+        <script src="js/jquery-1.7.2.min.js">
+        </script>
+        <script src="js/jquery.mobile-1.1.1.min.js">
+        </script>
+        <script src="AvaluosView.js">
+        </script>
+
+        <script type="text/javascript">
+
+        </script>
+    </head>
+    <body>
+        <!-- Home -->
+        <div data-role="page" id="page1">
+            <div data-theme="a" data-role="header">
+                <h4>
+                    Visitas
+                </h4>
+                <a data-role="button" data-rel="back" data-transition="flow" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
+                    Atras
+                </a>
+            </div>
+            <div data-role="content" style="padding: 15px">
+                <a data-role="button" rel="external" data-transition="flow" data-theme="a" href="visitas.html" data-icon="plus" data-iconpos="left">
+                    Insertar Nuevo
+                </a>
+                <br />
+                <ul id="visitas" data-role="listview" data-divider-theme="b" data-inset="false">
+                    <li data-role="list-divider" role="heading">
+                        Listado de Visitas Existentes:
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <script>
+            //Cuando el dispositivo este listo y cargado el phonegap
+            document.addEventListener("deviceready", onDeviceReady, false);
+
+            var db;
+
+            function onDeviceReady() {
+                db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+                db.transaction(createAvaluos, errorAvaluos);
+                db.transaction(selectAvaluos, errorAvaluos);
+            }
+
+            //Avaluos Table
+            //Create table usuarios
+            function createAvaluos(tx) {
+
+                var table =  "CREATE TABLE IF NOT EXISTS VISITAS (";
+                table += "ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
+                table += "PROYECTO INTEGER NOT NULL, ";
+                table += "NO_AVALUO INTEGER NOT NULL, ";
+                table += "NOMBRE NVARCHAR(255) NOT NULL, ";
+                table += "RUTA NVARCHAR(255) NOT NULL, ";
+                table += "ORDEN INT NOT NULL, ";
+                table += "FECHA_CREACION DATE, ";
+                table += "FECHA_UPDATE DATE) ";
+
+                tx.executeSql(table);
+            }
+
+            function selectAvaluos (tx) {
+                var select ="SELECT * FROM VISITAS";
+                tx.executeSql(select, [], successSelect, errorSelect);
+            }
+
+            function successSelect (tx, result) {
+                var cantidadFilas = result.rows.length;
+
+                for (var i = 0; i < result.rows.length; i++) {
+                  $("#visitas").append(" <li data-theme='c'> <a href='avaluos.html?visita_id=" + result.rows.item(i).ID + "' rel='external'  data-transition='flow'> " + result.rows.item(i).NOMBRE + " <span class='ui-li-count'> Ir </span> </a></li>");
+                };
+
+                $("#avaluos").listview('refresh');
+            }
+
+            function errorSelect () {
+                alert("Error al cargar Visitas");
+            }
+
+            function errorAvaluos () {
+                alert("Error BD");
+            }
+        </script>
+    </body>
+</html>
