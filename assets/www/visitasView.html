@@ -67,7 +67,7 @@
                 table += "PROYECTO INTEGER NOT NULL, ";
                 table += "NO_AVALUO INTEGER NOT NULL, ";
                 table += "NOMBRE NVARCHAR(255) NOT NULL, ";
-                table += "RUTA NVARCHAR(255) NOT NULL, ";
+                table += "RUTA NVARCHAR(2000) NOT NULL, ";
                 table += "ORDEN INT NOT NULL, ";
                 table += "FECHA_CREACION DATE, ";
                 table += "FECHA_UPDATE DATE) ";
@@ -84,10 +84,10 @@
                 var cantidadFilas = result.rows.length;
 
                 for (var i = 0; i < result.rows.length; i++) {
-                  $("#visitas").append(" <li data-theme='c'> <a href='avaluos.html?visita_id=" + result.rows.item(i).ID + "' rel='external'  data-transition='flow'> " + result.rows.item(i).NOMBRE + " <span class='ui-li-count'> Ir </span> </a></li>");
+                  $("#visitas").append(" <li data-theme='c'> <a href='visitas.html?visita_id=" + result.rows.item(i).ID + "' rel='external'  data-transition='flow'> <img width='60px' heigth='100px' src='" + result.rows.item(i).RUTA + "' alt='" + result.rows.item(i).NOMBRE + "'/>" + result.rows.item(i).NOMBRE + " <span class='ui-li-count'> Ir </span> </a></li>");
                 };
 
-                $("#avaluos").listview('refresh');
+                $("#visitas").listview('refresh');
             }
 
             function errorSelect () {

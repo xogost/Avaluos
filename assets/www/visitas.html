@@ -19,6 +19,14 @@
         </script>
         <script type="text/javascript">
             
+            function okPhoto (pathPhoto) {
+                $("#ruta").val(pathPhoto);
+            }
+
+            function errorPhotho (error) {
+                alert("Ocurrio un error al tomar la fotografia.");
+            }
+
             //Cuando el dispositivo este listo y cargado el phonegap
             document.addEventListener("deviceready", onDeviceReady, false);
 
@@ -29,38 +37,49 @@
                 db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
 
                 visita_id = window.location.href.split("=")[1];
+
+                $("#capturar").click(function() {
+                    navigator.camera.getPicture( okPhoto, errorPhotho, { quality: 100, destinationType: Camera.DestinationType.FILE_URI } );
+
+                });
                 
                 db.transaction(selectProyectos, errorAvaluos);
 
-                if(visita_id != undefined)
+                $("#proyecto").change(function() {
                     db.transaction(selectAvaluos, errorAvaluos);
+                });
+
+                if(visita_id != undefined)
+                {
+                    db.transaction(selectVisita, errorAvaluos);
+                }
                 else
                     $("#borrar").attr("display","none");
             }
 
             function saveInsert () {
                 db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
-
+                alert("entro");
                 if(visita_id == undefined)
                 {
-                    db.transaction(InsertAvaluos,[], successInsert, errorAvaluos);
+                    db.transaction(InsertVisita,[], successInsert, errorAvaluos);
                 }
                 else
                 {
-                    db.transaction(UpdateAvaluos,[], successInsert, errorAvaluos);   
+                    db.transaction(UpdateVisita,[], successInsert, errorAvaluos);   
                 }
             }
 
-            function dropAvaluo () {
+            function dropVisita () {
                 db.transaction(DeleteAvaluos,[], successInsert, errorAvaluos);   
             }
 
-            function DeleteAvaluos (tx) {
+            function DeleteVisita (tx) {
                 var delAvaluo = "DELETE FROM VISITAS WHERE ID = " + visita_id;
                 tx.executeSql(delAvaluo); 
             }
 
-            function selectAvaluos (tx) {
+            function selectVisita (tx) {
                 var select ="SELECT * FROM VISITAS WHERE ID = " + visita_id;
                 tx.executeSql(select, [], successSelect, errorSelect);
             }
@@ -68,6 +87,11 @@
             function selectProyectos (tx) {
                 var select ="SELECT * FROM PROYECTOS";
                 tx.executeSql(select, [], loadProjects, errorSelectProjects);
+            }
+
+            function selectAvaluos (tx) {
+                var select ="SELECT * FROM AVALUOS WHERE PROYECTO = " + $("#proyecto").val();
+                tx.executeSql(select, [], loadAvaluos, errorSelectProjects);
             }
 
             function errorSelectProjects () {
@@ -84,13 +108,26 @@
                 $("#proyecto").selectmenu("refresh")
             }
 
+            function loadAvaluos (tx, result) {
+                var cantidadFilas = result.rows.length;
+                
+                for (var i = 0; i < result.rows.length; i++) {
+                    $("#avaluo").append("<option value=" + result.rows.item(i).ID + "> " + result.rows.item(i).NO_AVALUO + " </option>");
+                    
+                };
+                $("#avaluo").selectmenu("refresh")
+            }
+
             function successSelect (tx, result) {
                 var cantidadFilas = result.rows.length;
                 
                 for (var i = 0; i < result.rows.length; i++) {
                     $("#proyecto").val(result.rows.item(i).PROYECTO).selectmenu("refresh");
-                    $("#no_avaluo").val(result.rows.item(i).NO_AVALUO);
-                    $("#proposito").val(result.rows.item(i).PROPOSITO);
+                    $("#proyecto").trigger("change");
+                    $("#avaluo").val(result.rows.item(i).NO_AVALUO).selectmenu("refresh");
+                    $("#nombre").val(result.rows.item(i).NOMBRE);
+                    $("#ruta").val(result.rows.item(i).RUTA);
+                    $("#orden").val(result.rows.item(i).ORDEN);
                 };
             }
 
@@ -102,25 +139,24 @@
                 alert("El proceso finalizo correctamente.");
             }
             //Execute insert into
-            function InsertAvaluos(tx) {
+            function InsertVisita(tx) {
 
                 insertInto = "INSERT INTO VISITAS (PROYECTO, NO_AVALUO, NOMBRE, RUTA, ORDEN) VALUES (";
-                insertInto += $("#proyecto").val() + ", " + $("#no_avaluo").val() + ", '";
-                insertInto += $("#nombre").val() + ", '" + $("#ruta").val() + "', " + $("#orden").val() + ");";
-                
+                insertInto += $("#proyecto").val() + ", " + $("#avaluo").val() + ", '";
+                insertInto += $("#nombre").val() + "', '" + $("#ruta").val() + "', " + $("#orden").val() + ");";
                 tx.executeSql(insertInto);
 
             }
-            function UpdateAvaluos (tx) {
+            function UpdateVisita (tx) {
                 update = "UPDATE VISITAS";
                 update += " SET PROYECTO = " + $("#proyecto").val();
-                update += ", NO_AVALUO = " + $("#no_avaluo").val();
+                update += ", NO_AVALUO = " + $("#avaluo").val();
                 update += ", NOMRBE = '" + $("#nombre").val();
-                update += ", RUTA = '" + $("#ruta").val();
-                update += ", ORDEN = '" + $("#orden").val();
+                update += "', RUTA = '" + $("#ruta").val();
+                update += "', ORDEN = " + $("#orden").val();
 
-                update += "' WHERE ID = " + visita_id;
-
+                update += " WHERE ID = " + visita_id;
+                alert(update);
                 tx.executeSql(update);
             }
             function errorAvaluos() {
@@ -200,8 +236,15 @@
                         <input name="" id="orden" placeholder="Numero de documentos..." value="" type="number" />
                     </fieldset>
                 </div>
-                <input type="hidden" id="ruta" value="" />
-                <input type="button" id="carpturare" onclick="capturar();" data-icon="plus" data-iconpos="left" value="Capturar Foto" />
+                <div data-role="fieldcontain">
+                    <fieldset data-role="controlgroup">
+                        <label for="orden">
+                            Fotografia
+                        </label>
+                        <input name="" id="ruta" readonly="true" placeholder="Ruta imagen ..." value="" type="text" />
+                    </fieldset>
+                </div>
+                <input type="button" id="capturar" data-icon="plus" data-iconpos="left" value="Capturar Foto" />
                 <br/>
                 <input type="submit" id="guardar" onclick="saveInsert();" data-icon="plus" data-iconpos="left" value="Guardar" />
                 <input type="submit" id="borrar" onclick="dropAvaluo();" data-icon="minus" data-iconpos="left" value="Eliminar" />
