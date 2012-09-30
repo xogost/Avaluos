@@ -30,7 +30,7 @@
                 <h4>
                     Avaluos
                 </h4>
-                <a data-role="button" data-rel="back" data-transition="flow" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
+                <a data-role="button" rel="external" data-transition="flip" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
                     Atras
                 </a>
             </div>
@@ -66,9 +66,9 @@
                 table += "ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
                 table += "PROYECTO INTEGER NOT NULL, ";
                 table += "NO_AVALUO INTEGER NOT NULL, ";
-                table += "PROPOSITO NVARCHAR(255) NOT NULL, ";
-                table += "FECHA_CREACION DATE, ";
-                table += "FECHA_UPDATE DATE) ";
+                table += "PROPOSITO NVARCHAR(255) NULL, ";
+                table += "FECHA_CREACION TEXT, ";
+                table += "FECHA_UPDATE TEXT) ";
 
                 tx.executeSql(table);
             }
@@ -82,7 +82,7 @@
                 var cantidadFilas = result.rows.length;
 
                 for (var i = 0; i < result.rows.length; i++) {
-                  $("#avaluos").append(" <li data-theme='c'> <a href='avaluos.html?avaluo_id=" + result.rows.item(i).ID + "' rel='external'  data-transition='flow'> " + result.rows.item(i).NO_AVALUO + " <span class='ui-li-count'> Ir </span> </a></li>");
+                  $("#avaluos").append(" <li data-theme='c'> <a href='avaluos.html?avaluo_id=" + result.rows.item(i).ID + "' rel='external'  data-transition='flow'> " + result.rows.item(i).NO_AVALUO + " - " + result.rows.item(i).FECHA_CREACION + " <span class='ui-li-count'> Ir </span> </a></li>");
                 };
 
                 $("#avaluos").listview('refresh');

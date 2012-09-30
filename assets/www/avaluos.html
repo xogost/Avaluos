@@ -35,7 +35,7 @@
                 if(avaluo_id != undefined)
                     db.transaction(selectAvaluos, errorAvaluos);
                 else
-                    $("#borrar").attr("display","none");
+                    $("#borrar").closest('.ui-btn').hide();
             }
 
             function saveInsert () {
@@ -90,7 +90,6 @@
                 for (var i = 0; i < result.rows.length; i++) {
                     $("#proyecto").val(result.rows.item(i).PROYECTO).selectmenu("refresh");
                     $("#no_avaluo").val(result.rows.item(i).NO_AVALUO);
-                    $("#proposito").val(result.rows.item(i).PROPOSITO);
                 };
             }
 
@@ -103,10 +102,9 @@
             }
             //Execute insert into
             function InsertAvaluos(tx) {
-
-                insertInto = "INSERT INTO AVALUOS (PROYECTO, NO_AVALUO, PROPOSITO) VALUES (";
-                insertInto += $("#proyecto").val() + ", '" + $("#no_avaluo").val() + "', '";
-                insertInto += $("#proposito").val() + "')";
+                var t = new Date();
+                insertInto = "INSERT INTO AVALUOS (PROYECTO, NO_AVALUO, FECHA_CREACION) VALUES (";
+                insertInto += $("#proyecto").val() + ", '" + $("#no_avaluo").val() + "', strftime('%Y-%m-%d %H:%M:%S'));";
                 
                 tx.executeSql(insertInto);
 
@@ -114,10 +112,9 @@
             function UpdateAvaluos (tx) {
                 update = "UPDATE AVALUOS";
                 update += " SET PROYECTO = " + $("#proyecto").val();
-                update += ", NO_AVALUO = " + $("#no_avaluo").val();
-                update += ", PROPOSITO = '" + $("#proposito").val();
-
-                update += "' WHERE ID = " + avaluo_id;
+                update += " , NO_AVALUO = '" + $("#no_avaluo").val();
+                update += " ', FECHA_UPDATE = strftime('%Y-%m-%d %H:%M:%S')";
+                update += " WHERE ID = " + avaluo_id;
 
                 tx.executeSql(update);
             }
@@ -133,7 +130,7 @@
                 <h4>
                     Avaluos
                 </h4>
-                <a data-role="button" data-rel="back" data-transition="fade" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
+                <a data-role="button" rel="external" data-transition="fade" data-theme="c" href="avaluosView.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
                     Atras
                 </a>
             </div>
@@ -178,15 +175,6 @@
                             Número del Avaluo
                         </label>
                         <input name="" id="no_avaluo" placeholder="Número de avaluos..." value="" type="number" />
-                    </fieldset>
-                </div>
-                <div data-role="fieldcontain">
-                    <fieldset data-role="controlgroup">
-                        <label for="proposito">
-                            Propósito del Avaluo
-                        </label>
-                        <textarea name="" id="proposito" placeholder="Texto aquí...">
-                        </textarea>
                     </fieldset>
                 </div>
                 

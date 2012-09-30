@@ -35,7 +35,7 @@
                     db.transaction(selectProyecto, errorInserIntoProyectos);
                 }
                 else
-                    $("#borrar").attr("display","none");
+                    $("#borrar").closest('.ui-btn').hide();
             }
 
             function saveInsert () {
@@ -127,7 +127,7 @@
                 <h4>
                     Proyectos
                 </h4>
-                <a data-role="button" data-rel="back" data-transition="fade" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
+                <a data-role="button" data-transition="flip" data-theme="c" href="proyectosView.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
                     Atras
                 </a>
             </div>
@@ -159,7 +159,7 @@
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
                         <label for="no_contacto">
-                            No. Contacto
+                            No. Contrato
                         </label>
                         <input name="" id="no_contacto" required="required" placeholder="Escriba texto aquí..." value="" type="number" />
                     </fieldset>
@@ -185,7 +185,7 @@
                         <label for="celular">
                             Celular
                         </label>
-                        <input name="" id="celular" placeholder="Número de Celular..." type="tel" />
+                        <input name="" id="celular" placeholder="Número de Celular..." type="number" />
                     </fieldset>
                 </div>
                 <div data-role="fieldcontain">
@@ -193,7 +193,7 @@
                         <label for="telefono">
                             Teléfono
                         </label>
-                        <input name="" id="telefono" placeholder="Número de Teléfono" type="tel" />
+                        <input name="" id="telefono" placeholder="Número de Teléfono" type="number" />
                     </fieldset>
                 </div>
                 <div data-role="fieldcontain">
@@ -233,7 +233,10 @@
                             Ejecucion
                         </option>
                         <option value="1">
-                            Detenido
+                            Legalizacion
+                        </option>
+                        <option value="1">
+                            Terminado
                         </option>
                     </select>
                 </div>

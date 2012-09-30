@@ -67,10 +67,18 @@
                 table += "PROYECTO INTEGER NOT NULL, ";
                 table += "NO_AVALUO INTEGER NOT NULL, ";
                 table += "NOMBRE NVARCHAR(255) NOT NULL, ";
+                table += "RUTA NVARCHAR(2000) NULL, ";
+                table += "ORDEN INT NULL, ";
+                table += "FECHA_CREACION TEXT, ";
+                table += "FECHA_UPDATE TEXT); ";
+
+                var table =  "CREATE TABLE IF NOT EXISTS IMAGES_VISITAS (";
+                table += "ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
+                table += "VISITA INTEGER NOT NULL, ";
                 table += "RUTA NVARCHAR(2000) NOT NULL, ";
                 table += "ORDEN INT NOT NULL, ";
-                table += "FECHA_CREACION DATE, ";
-                table += "FECHA_UPDATE DATE) ";
+                table += "FECHA_CREACION TEXT, ";
+                table += "FECHA_UPDATE TEXT); ";
 
                 tx.executeSql(table);
             }
