@@ -21,8 +21,6 @@
             
             function okPhoto (pathPhoto) {
                 $("#ruta").val(pathPhoto);
-                agregarImagen();
-
             }
 
             function errorPhotho (error) {
@@ -35,6 +33,8 @@
             var db;
             var visita_id;
             var no_avaluo;
+            var imagedelete_id;
+            var arrayOrden = new Array();
 
             function onDeviceReady() {
                 db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
@@ -45,6 +45,11 @@
                     navigator.camera.getPicture( okPhoto, errorPhotho, { quality: 100, destinationType: Camera.DestinationType.FILE_URI } );
 
                 });
+                $("#infile").click(function() {
+                    navigator.camera.getPicture( okPhoto, errorPhotho, { quality: 100, sourceType: Camera.PictureSourceType.PHOTOLIBRARY , destinationType: Camera.DestinationType.FILE_URI } );
+
+                });
+                
                 
                 db.transaction(selectProyectos, errorAvaluos);
 
@@ -77,18 +82,34 @@
             }
 
             function agregarImagen(){
-                if(visita_id != undefined){
+
+                var orderExists = 0;
+                for(var item in arrayOrden){                    
+                    alert(item);
+                    if(item == $("#orden").val())
+                    {
+                        orderExists = 1;
+                        break;
+                    }
+                }
+                alert(orderExists);
+                if(orderExists == 0 && visita_id != undefined){
                     db.transaction(InsertImagenVisita,[], successInsert, errorAvaluos);
                     db.transaction(selectImagesVisitas, errorImagesVisitas);
                 }
+                else if(orderExists == 1)
+                    alert("El orden para la imagen capturada ya existe.");
             }
 
             function dropVisita () {
-                db.transaction(DeleteAvaluos,[], successInsert, errorAvaluos);   
+                db.transaction(DeleteVisita,[], successInsert, errorAvaluos);   
             }
 
             function DeleteVisita (tx) {
                 var delAvaluo = "DELETE FROM VISITAS WHERE ID = " + visita_id;
+                delAvaluo += "; DELETE FROM IMAGES_VISITAS WHERE VISITA = " + visita_id;
+                delAvaluo += ";";
+                
                 tx.executeSql(delAvaluo); 
             }
 
@@ -155,6 +176,7 @@
                 insertInto = "INSERT INTO VISITAS (PROYECTO, NO_AVALUO, NOMBRE) VALUES (";
                 insertInto += $("#proyecto").val() + ", " + $("#avaluo").val() + ", '";
                 insertInto += $("#nombre").val() + "');";
+                alert(insertInto);
                 tx.executeSql(insertInto);
 
             }
@@ -188,11 +210,34 @@
                 tx.executeSql(select, [], successSelectImagesVisitas, errorSelect);
             }
 
+            function eliminarImagen(id){
+                var resultConfirm = confirm("Esta seguro que desea eliminar esta imagen");
+                if(resultConfirm)
+                {
+                    imagedelete_id = id;
+                    db.transaction(deleteImageVisita,[],succesDeleteImage, errorDeleteImage);
+                }
+            }
+            function errorDeleteImage() {
+                alert("No se puede eliminar la imagen seleccionada.");
+            }
+            function succesDeleteImage() {
+                alert("La imagen se elimino con éxito");
+            }
+            function deleteImageVisita(tx){
+                var deleteImage ="DELETE FROM IMAGES_VISITAS WHERE ID = " + imagedelete_id + ";";
+                tx.executeSql(deleteImage);
+                db.transaction(selectImagesVisitas, errorImagesVisitas);
+            }
+
             function successSelectImagesVisitas (tx, result) {
                 var cantidadFilas = result.rows.length;
                 var html = "";
+                arrayOrden = new Array();
                 for (var i = 0; i < result.rows.length; i++) {
-                  html += " <li data-theme='c'> <a href='visitas.html?visita_id=" + result.rows.item(i).ID + "' rel='external'  data-transition='flow'> <img width='60px' heigth='100px' src='" + result.rows.item(i).RUTA + "' alt='" + result.rows.item(i).ORDEN + "'/>" + result.rows.item(i).ORDEN + " <span class='ui-li-count'> Ir </span> </a></li>";
+                  html += " <li data-theme='c'> <a href='#' id='" + result.rows.item(i).ID + "' onclick='eliminarImagen(" + result.rows.item(i).ID + ");' rel='external'  data-transition='flow'> <img width='60px' heigth='100px' src='" + result.rows.item(i).RUTA + "' alt='" + result.rows.item(i).ORDEN + "'/>" + result.rows.item(i).ORDEN + " <span class='ui-li-count'> Eliminar </span> </a></li>";
+
+                  arrayOrden.push(result.rows.item(i).ORDEN);
                 };
                 $("#images").html(html);
                 $("#images").listview('refresh');
@@ -267,6 +312,9 @@
                         <input name="" id="nombre" placeholder="Nombre Imagen..." value="" type="text" />
                     </fieldset>
                 </div>
+                <input type="submit" id="guardar" onclick="saveInsert();" data-icon="plus" data-iconpos="left" value="Guardar" />
+                <input type="submit" id="borrar" onclick="dropVisita();" data-icon="minus" data-iconpos="left" value="Eliminar" />
+                <br/>
                 <div data-role="fieldcontain">
                     <div data-role="content">
                         <h4>
@@ -287,18 +335,17 @@
                         <input name="" id="ruta" readonly="true" placeholder="Ruta imagen ..." value="" type="hidden" />
                     </fieldset>
                 </div>
-                <input type="button" id="capturar" data-icon="plus" data-iconpos="left" value="Capturar Foto" />
+                <input type="submit" id="agregar" data-icon="plus" data-iconpos="left" value="Capturar" />
                 <br/>
-                <input type="submit" id="agregar" data-icon="minus" data-iconpos="left" value="Agregar a la lista" />
+                <input type="submit" id="infile" data-icon="plus" data-iconpos="left" value="Seleccionar" />
+                <br/>
+                <input type="submit" id="saveImage" data-icon="plus" data-iconpos="left" onclick='agregarImagen();' value="Agregar" />
                 <br/>
                 <ul id="images" data-role="listview" data-divider-theme="b" data-inset="false">
                     <li data-role="list-divider" role="heading">
                         Listado de Visitas Existentes:
                     </li>
                 </ul>
-                <br/>
-                <input type="submit" id="guardar" onclick="saveInsert();" data-icon="plus" data-iconpos="left" value="Guardar" />
-                <input type="submit" id="borrar" onclick="dropAvaluo();" data-icon="minus" data-iconpos="left" value="Eliminar" />
             </div>
         </div>
         <script>
