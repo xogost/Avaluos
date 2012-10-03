@@ -85,14 +85,12 @@
 
                 var orderExists = 0;
                 for(var item in arrayOrden){                    
-                    alert(item);
                     if(item == $("#orden").val())
                     {
                         orderExists = 1;
                         break;
                     }
                 }
-                alert(orderExists);
                 if(orderExists == 0 && visita_id != undefined){
                     db.transaction(InsertImagenVisita,[], successInsert, errorAvaluos);
                     db.transaction(selectImagesVisitas, errorImagesVisitas);
