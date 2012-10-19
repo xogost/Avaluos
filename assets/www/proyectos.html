@@ -93,7 +93,7 @@
                 insertInto += $("#no_contacto").val() + ", '" + $("#proyecto").val() + "', '";
                 insertInto += $("#director").val() + "', '" + $("#celular").val() + "', ' ";
                 insertInto += $("#telefono").val() + "', '" + $("#direccion").val() + "', ";
-                insertInto += $("#no_avaluos").val() + ", " + $("#estado").val() + ", ' ";
+                insertInto += $("#no_avaluos").val() + ", '" + $("#estado").val() + "', ' ";
                 insertInto += $("#observacion").val() + "')";
                 
                 tx.executeSql(insertInto);
@@ -108,8 +108,8 @@
                 update += "', CELULAR = '" + $("#celular").val();
                 update += "', DIRECCION = '" + $("#direccion").val();
                 update += "', NO_AVALUOS = " + $("#no_avaluos").val();
-                update += ", ESTADO = " + $("#estado").val();
-                update += ", OBSERVACION = '" + $("#observacion").val();
+                update += ", ESTADO = '" + $("#estado").val();
+                update += "', OBSERVACION = '" + $("#observacion").val();
 
                 update += "' WHERE ID = " + proyecto_id;
 
@@ -229,13 +229,13 @@
                         <option value="01">
                             Seleccione
                         </option>
-                        <option value="0">
-                            Ejecucion
+                        <option value="Ejecución">
+                            Ejecución
                         </option>
-                        <option value="1">
-                            Legalizacion
+                        <option value="Legalización">
+                            Legalización
                         </option>
-                        <option value="1">
+                        <option value="Terminado">
                             Terminado
                         </option>
                     </select>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" charset="UTF-8"> 
+        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1" charset="UTF-8"/> 
         <title>
             Menu - Avaluos
         </title>
@@ -18,12 +18,65 @@
         </script>
         <script src="js/menu.js">
         </script>
-        <SCRIPT TYPE="text/javascript">
+        <script TYPE="text/javascript">
+            //Cuando el dispositivo este listo y cargado el phonegap
+            document.addEventListener("deviceready", onDeviceReady, false);
+            var db;
+            function onDeviceReady() {
+                $("#sincronizar").click(function(){
+                   db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+                   alert("CLICK");
+                   db.transaction(selectProyectos, errorProyectos); 
+                });
+            }
 
-            $(function () {
-            });
-            
-        </SCRIPT>
+            //Proyectos Table
+            function selectProyectos (tx) {
+                var select ="SELECT * FROM PROYECTOS WHERE SYNC IS NULL;";
+                tx.executeSql(select, [], successSelect, errorSelect);
+            }
+
+            function successSelect (tx, result) {
+                alert(result.rows.length);
+                for (var i = 0; i < result.rows.length; i++) {
+                  //$("#proyectos").append(" <li data-theme='c'> <a href='proyectos.html?proyecto_id=" + result.rows.item(i).ID + "' rel='external'  data-transition='slide'> " + result.rows.item(i).PROYECTO + " <span class='ui-li-count'> Ir </span> </a></li>");
+                  alert("Proyecto " + result.rows.item(i).ID);
+                  $.ajax({
+                      url: "http://192.168.0.6/avaluos/ci/index.php/proyectos/accionesMovil",
+                      data: {
+                          "proyectoContrato": result.rows.item(i).NO_CONTACTO,
+                          "proyectoNombre": result.rows.item(i).PROYECTO,
+                          "proyectoDirector": result.rows.item(i).DIRECTOR,
+                          "proyectoCelular": result.rows.item(i).CELULAR,
+                          "proyectoDireccion": result.rows.item(i).DIRECCION,
+                          "proyectoTelefono": result.rows.item(i).TELEFONO,
+                          "proyectoNumAvaluos": result.rows.item(i).NO_AVALUOS,
+                          "proyectoObservacion": result.rows.item(i).OBSERVACION,
+                          "proyectoEstado": result.rows.item(i).ESTADO,
+                          "oper": "add"
+                      },
+                      type: "POST",
+                      success: function(resultado){
+                          if(resultado == "Parametros incorrectos")
+                              alert(resultado);
+                          else
+                              alert(resultado);
+                      },
+                      error: function(error){alert(error);}
+                  });
+                };
+
+                $("#proyectos").listview('refresh');
+            }
+
+            function errorSelect () {
+                alert("Error al cargar proyectos");
+            }
+
+            function errorProyectos () {
+                alert("Error BD");
+            }
+        </script>
     </head>
     <body>
         <!-- Home -->
@@ -63,6 +116,9 @@
                         </a>
                     </li>
                 </ul>
+                <h4>Sincronización</h4>
+                <p>Ejecuta el proceso de sincronziación para los proyectos, avaluos e imagenes por visita realizadas localmente.</p>
+                <a id="sincronizar" href="#" data-role="button" data-icon="refresh">Sincronizar</a>
             </div>
         </div>
         <script>
