@@ -19,30 +19,82 @@
         <script src="js/menu.js">
         </script>
         <script TYPE="text/javascript">
+            var proyecto_actuzalizar = 0;
+            var proyecto_idweb = 0;
+            var avaluo_actuzalizar = 0;
+            var avaluo_idweb = 0;
+            var cantidadProyectosActualziados = 0;
+            var cantidadAvaluosActualziados = 0;
             //Cuando el dispositivo este listo y cargado el phonegap
             document.addEventListener("deviceready", onDeviceReady, false);
             var db;
             function onDeviceReady() {
                 $("#sincronizar").click(function(){
                    db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
-                   alert("CLICK");
                    db.transaction(selectProyectos, errorProyectos); 
                 });
             }
 
-            //Proyectos Table
-            function selectProyectos (tx) {
+            //Select Proyectos
+            function selectProyectos(tx) {
                 var select ="SELECT * FROM PROYECTOS WHERE SYNC IS NULL;";
                 tx.executeSql(select, [], successSelect, errorSelect);
             }
-
-            function successSelect (tx, result) {
-                alert(result.rows.length);
+            
+            //Select Avaluos
+            function selectAvaluos(tx) {
+                var select ="SELECT * FROM AVALUOS WHERE PROYECTO = " + proyecto_actuzalizar + " AND SYNC IS NULL;";
+                tx.executeSql(select, [], successSelectAvaluos, errorSelect);
+            }
+            
+            //Update Proyectos
+            function UpdateProyectos(tx) {
+                var update ="UPDATE PROYECTOS SET IDWEB = " + proyecto_idweb +" , SYNC = 1 WHERE ID =" + proyecto_actuzalizar + ";";
+                tx.executeSql(update);
+            }
+            
+            //Update Avaluos
+            function UpdateAvaluos(tx) {
+                var update ="UPDATE AVALUOS SET WEBID = " + avaluo_idweb +" , SYNC = 1 WHERE ID =" + avaluo_actuzalizar + ";";
+                tx.executeSql(update);
+            }
+            
+            function successSelectAvaluos(tx, result){
                 for (var i = 0; i < result.rows.length; i++) {
-                  //$("#proyectos").append(" <li data-theme='c'> <a href='proyectos.html?proyecto_id=" + result.rows.item(i).ID + "' rel='external'  data-transition='slide'> " + result.rows.item(i).PROYECTO + " <span class='ui-li-count'> Ir </span> </a></li>");
-                  alert("Proyecto " + result.rows.item(i).ID);
+                  avaluo_actuzalizar = result.rows.item(i).ID;
                   $.ajax({
-                      url: "http://192.168.0.6/avaluos/ci/index.php/proyectos/accionesMovil",
+                      url: "http://74.207.234.233:9512/ci/index.php/avaluos/crea/true",
+                      data: {
+                          "proyecto": proyecto_idweb,
+                          "avaluo": result.rows.item(i).NO_AVALUO
+                      },
+                      type: "GET",
+                      success: function(resultado){
+                          if(resultado == "Debe elegir un número de proyecto" || resultado == "Debe asignar un número de avaluo" || resultado == "Ha excedido el número de avaluos para este proyecto")
+                              alert(resultado);
+                          else
+                              {
+                                avaluo_idweb = resultado;
+                                db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+                                db.transaction(UpdateAvaluos, errorUpdateProyecto); 
+                                cantidadAvaluosActualziados++;
+                              }
+                      },
+                      error: function(error){
+                          alert("Error al Sincronizar!");
+                          
+                      }
+                  });
+                };
+            }
+            function errorUpdateProyecto(){
+                alert("Error al actualizar el proyecto!");
+            }
+            function successSelect(tx, result) {
+                for (var i = 0; i < result.rows.length; i++) {
+                  proyecto_actuzalizar = result.rows.item(i).ID;
+                  $.ajax({
+                      url: "http://74.207.234.233:9512/ci/index.php/proyectos/accionesMovil",
                       data: {
                           "proyectoContrato": result.rows.item(i).NO_CONTACTO,
                           "proyectoNombre": result.rows.item(i).PROYECTO,
@@ -60,13 +112,22 @@
                           if(resultado == "Parametros incorrectos")
                               alert(resultado);
                           else
-                              alert(resultado);
+                              {
+                                proyecto_idweb = resultado;
+                                db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+                                db.transaction(UpdateProyectos, errorUpdateProyecto); 
+                                cantidadProyectosActualziados++;
+                                db.transaction(selectAvaluos, errorProyectos); 
+                              }
                       },
-                      error: function(error){alert(error);}
+                      error: function(error){
+                          alert("Error al Sincronizar!");
+                          
+                      }
                   });
                 };
-
-                $("#proyectos").listview('refresh');
+                
+                alert("Hey!, El proceso de sincronización termino satisfactoriamente.");
             }
 
             function errorSelect () {
