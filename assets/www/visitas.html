@@ -20,7 +20,8 @@
         <script type="text/javascript">
             
             function okPhoto (pathPhoto) {
-                $("#ruta").val(pathPhoto);
+                $("#ruta").html("data:image/jpeg;base64," + pathPhoto);
+                alert("La imagen se cargo correctamente.");
             }
 
             function errorPhotho (error) {
@@ -40,35 +41,29 @@
                 db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
 
                 visita_id = window.location.href.split("=")[1];
-
+                
                 $("#agregar").click(function() {
-                    navigator.camera.getPicture( okPhoto, errorPhotho, { quality: 100, destinationType: Camera.DestinationType.FILE_URI } );
+                    navigator.camera.getPicture( okPhoto, errorPhotho, { quality: 40, destinationType: Camera.DestinationType.DATA_URL } );
 
                 });
                 $("#infile").click(function() {
-                    navigator.camera.getPicture( okPhoto, errorPhotho, { quality: 100, sourceType: Camera.PictureSourceType.PHOTOLIBRARY , destinationType: Camera.DestinationType.FILE_URI } );
+                    navigator.camera.getPicture( okPhoto, errorPhotho, { quality: 40, sourceType: Camera.PictureSourceType.PHOTOLIBRARY , destinationType: Camera.DestinationType.DATA_URL } );
 
-                });
-                
-                
-                db.transaction(selectProyectos, errorAvaluos);
-
-                $("#proyecto").change(function() {
-                    db.transaction(selectAvaluos, errorAvaluos);
                 });
 
                 if(visita_id != undefined)
                 {
-                    db.transaction(selectVisita, errorAvaluos);
-
+                    db.transaction(selectVisita, errorVisitaSelect);
                     db.transaction(selectImagesVisitas, errorImagesVisitas);
-
-                    $("#avaluo").val(no_avaluo).selectmenu("refresh");
                 }
                 else
                     $("#borrar").attr("display","none");
             }
-
+            
+            function errorVisitaSelect(){
+                alert("Error al seleccionar la visita!");
+            }
+            
             function saveInsert () {
                 db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
                 if(visita_id == undefined)
@@ -92,7 +87,7 @@
                     }
                 }
                 if(orderExists == 0 && visita_id != undefined){
-                    db.transaction(InsertImagenVisita,[], successInsert, errorAvaluos);
+                    db.transaction(InsertImagenVisita,[], successInsert, errorImagesVisitas);
                     db.transaction(selectImagesVisitas, errorImagesVisitas);
                 }
                 else if(orderExists == 1)
@@ -151,20 +146,14 @@
             }
 
             function successSelect (tx, result) {
-                var cantidadFilas = result.rows.length;
-                
                 for (var i = 0; i < result.rows.length; i++) {
-                    $("#proyecto").val(result.rows.item(i).PROYECTO).selectmenu("refresh");
-                    $("#proyecto").trigger("change");
-                    no_avaluo = result.rows.item(i).NO_AVALUO;
                     $("#nombre").val(result.rows.item(i).NOMBRE);
                 }
             }
 
-            function errorSelect() {
-                alert("Error al cargar el avaluo.");
+            function errorSelect(error) {
+                alert("Error al cargar Imagenes!: " + error["0"].code);
             }
-
             function successInsert () {
                 alert("El proceso finalizo correctamente.");
             }
@@ -181,7 +170,7 @@
 
             //Execute insert into
             function InsertImagenVisita(tx) {
-
+                
                 insertInto = "INSERT INTO IMAGES_VISITAS (VISITA, RUTA, ORDEN) VALUES (";
                 insertInto += visita_id + ", '" + $("#ruta").val() + "', " + $("#orden").val() + ");";
                 tx.executeSql(insertInto);
@@ -196,7 +185,6 @@
                 update += "', ORDEN = " + $("#orden").val();
 
                 update += " WHERE ID = " + visita_id;
-                alert(update);
                 tx.executeSql(update);
             }
             function errorAvaluos() {
@@ -221,6 +209,7 @@
             }
             function succesDeleteImage() {
                 alert("La imagen se elimino con éxito");
+                db.transaction(selectImagesVisitas, errorImagesVisitas);
             }
             function deleteImageVisita(tx){
                 var deleteImage ="DELETE FROM IMAGES_VISITAS WHERE ID = " + imagedelete_id + ";";
@@ -229,7 +218,6 @@
             }
 
             function successSelectImagesVisitas (tx, result) {
-                var cantidadFilas = result.rows.length;
                 var html = "";
                 arrayOrden = new Array();
                 for (var i = 0; i < result.rows.length; i++) {
@@ -237,7 +225,7 @@
 
                   arrayOrden.push(result.rows.item(i).ORDEN);
                 };
-                $("#images").html(html);
+                $("#images").append(html);
                 $("#images").listview('refresh');
             }
 
@@ -283,26 +271,6 @@
                     </ul>
                 </div>
                 <div data-role="fieldcontain">
-                    <label for="proyecto">
-                        Proyecto:
-                    </label>
-                    <select id="proyecto" data-native-menu="false" name="selectmenu1" id="selectmenu1">
-                        <option value="0">
-                            Seleccione
-                        </option>
-                    </select>
-                </div>
-                <div data-role="fieldcontain">
-                    <label for="avaluo">
-                        No. Avaluo:
-                    </label>
-                    <select id="avaluo" data-native-menu="false" name="selectmenu1" id="selectmenu1">
-                        <option value="0">
-                            Seleccione
-                        </option>
-                    </select>
-                </div>
-                <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
                         <label for="nombre">
                             Nombre
@@ -330,7 +298,7 @@
                 </div>
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
-                        <input name="" id="ruta" readonly="true" placeholder="Ruta imagen ..." value="" type="hidden" />
+                        <textarea name="" id="ruta" style="display: none;"></textarea>
                     </fieldset>
                 </div>
                 <input type="submit" id="agregar" data-icon="plus" data-iconpos="left" value="Capturar" />

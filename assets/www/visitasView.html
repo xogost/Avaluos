@@ -53,7 +53,6 @@
 
             function onDeviceReady() {
                 db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
-                db.transaction(createAvaluos, errorAvaluos);
                 db.transaction(selectAvaluos, errorAvaluos);
             }
 
@@ -74,7 +73,7 @@
                 table += "CREATE TABLE IF NOT EXISTS IMAGES_VISITAS (";
                 table += "ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
                 table += "VISITA INTEGER NOT NULL, ";
-                table += "RUTA NVARCHAR(2000) NOT NULL, ";
+                table += "RUTA TEXT NOT NULL, ";
                 table += "ORDEN INT NOT NULL, ";
                 table += "FECHA_CREACION TEXT, ";
                 table += "FECHA_UPDATE TEXT); ";
