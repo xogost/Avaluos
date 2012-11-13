@@ -55,7 +55,14 @@
                 var select ="SELECT * FROM PROYECTOS WHERE ID = " + proyecto_id;
                 tx.executeSql(select, [], successSelect, errorSelect);
             }
-
+            function validCampos(){
+                if($("#proyecto").val() == "" || $("#estado").val() == "" || $("#no_contrato").val() == ""){
+                    alert("No se puede almacenar el proyecto por que existen campos obligatorios.");
+                    return true;
+                }
+                else
+                    return false;
+            }
             function successSelect (tx, result) {
                 var cantidadFilas = result.rows.length;
                 
@@ -127,7 +134,7 @@
                 <h4>
                     Proyectos
                 </h4>
-                <a data-role="button" data-transition="flip" data-theme="c" href="proyectosView.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
+                <a data-role="button" data-transition="flip" data-theme="c" href="proyectosView.html" data-icon="arrow-l" rel="external" data-iconpos="left" class="ui-btn-left">
                     Atras
                 </a>
             </div>
@@ -159,7 +166,7 @@
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
                         <label for="no_contacto">
-                            No. Contrato
+                            * No. Contrato (Este campo es obligatorio!)
                         </label>
                         <input name="" id="no_contacto" required="required" placeholder="Escriba texto aquí..." value="" type="number" />
                     </fieldset>
@@ -167,7 +174,7 @@
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
                         <label for="proyecto">
-                            Proyecto
+                            * Proyecto (Este campo es obligatorio!)
                         </label>
                         <input name="" id="proyecto" required="required" placeholder="Escriba texto aquí..." value="" type="text" />
                     </fieldset>
@@ -223,7 +230,7 @@
                 </div>
                 <div data-role="fieldcontain">
                     <label for="estado">
-                        Estado:
+                        * Estado (Este campo es obligatorio!)
                     </label>
                     <select data-native-menu="false" name="estado" id="estado">
                         <option value="01">
@@ -240,7 +247,7 @@
                         </option>
                     </select>
                 </div>
-                <input type="submit" id="guardar" data-icon="plus" onclick="saveInsert();" data-iconpos="left" value="Guardar" />
+                <input type="submit" id="guardar" data-icon="plus" onclick="validCampos(); saveInsert();" data-iconpos="left" value="Guardar" />
                 <input type="submit" id="borrar" onclick="dropProyecto();" data-icon="minus" data-iconpos="left" value="Eliminar" />
             </div>
         </div>

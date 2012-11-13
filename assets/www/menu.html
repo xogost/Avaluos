@@ -177,13 +177,13 @@
                                 db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
                                 db.transaction(UpdateImagen,[], successUpdateVisita, errorVisita);
                             }
-                            alert("El proceso de sincronización para imagenes termino con éxito.");
                         },
                         error: function(error){
-                            alert("Error al Sincronizar Imagenes!");
+                            //Mensaje de error
                         }
                     });
                 };
+                alert("El proceso de sincronización para imagenes termino con éxito.");
             }
             function successUpdateVisita(){
                 
@@ -283,7 +283,7 @@
             }
         
             function errorVisitas () {
-                alert("Oppss! Error al descargar las visitas desde la web.");
+                alert("Oppss! Para sincronizar las visitas es necesario crear proyectos y avaluos.");
             }
         </script>
     </head>

@@ -121,6 +121,14 @@
             function errorAvaluos() {
                 alert("Error al ejecutar proceso");
             }
+            function validForm(){
+                if($("#no_avaluo").val() == ""){
+                    alert("El avaluo no puede ser creado por favor verifique los campos obligatorios.");
+                    return false;
+                }
+                else
+                    return true;
+            }
         </script>
     </head>
     <body>
@@ -172,13 +180,13 @@
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup">
                         <label for="no_avaluo">
-                            Número del Avaluo
+                            * Número del Avaluo (Campo obligatorio!)
                         </label>
-                        <input name="" id="no_avaluo" placeholder="Número de avaluos..." value="" type="number" />
+                        <input name="" id="no_avaluo" placeholder="Número de avaluos..." value="" type="text" />
                     </fieldset>
                 </div>
                 
-                <input type="submit" id="guardar" onclick="saveInsert();" data-icon="plus" data-iconpos="left" value="Guardar" />
+                <input type="submit" id="guardar" onclick="validForm(); saveInsert();" data-icon="plus" data-iconpos="left" value="Guardar" />
                 <input type="submit" id="borrar" onclick="dropAvaluo();" data-icon="minus" data-iconpos="left" value="Eliminar" />
             </div>
         </div>
