@@ -57,14 +57,14 @@
 
                 var table =  "CREATE TABLE IF NOT EXISTS PROYECTOS (";
                 table += "ID INTEGER PRIMARY KEY AUTOINCREMENT, ";
-                table += "NO_CONTACTO INTEGER NOT NULL, ";
+                table += "NO_CONTACTO NVARCHAR(255) NOT NULL, ";
                 table += "PROYECTO NVARCHAR(255) NOT NULL, ";
-                table += "DIRECTOR NVARCHAR(255) NOT NULL, ";
+                table += "DIRECTOR NVARCHAR(255), ";
                 table += "CELULAR NVARCHAR(255), ";
                 table += "TELEFONO NVARCHAR(255), ";
                 table += "DIRECCION NVARCHAR(255), ";
-                table += "NO_AVALUOS INTEGER(20) NOT NULL, ";
-                table += "ESTADO NVARCHAR(100), ";
+                table += "NO_AVALUOS INTEGER(20), ";
+                table += "ESTADO NVARCHAR(100) NOT NULL, ";
                 table += "OBSERVACION NVARCHAR(255), ";
                 table += "SYNC INTEGER(2), ";
                 table += "IDWEB INTEGER(20), ";

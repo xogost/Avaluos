@@ -96,13 +96,12 @@
             //Execute insert into
             function InsertIntoProyectos(tx) {
 
-                insertInto = "INSERT INTO PROYECTOS (NO_CONTACTO, PROYECTO, DIRECTOR, CELULAR, TELEFONO, DIRECCION, NO_AVALUOS, ESTADO, OBSERVACION ) VALUES (";
-                insertInto += $("#no_contacto").val() + ", '" + $("#proyecto").val() + "', '";
+                insertInto = "INSERT INTO PROYECTOS (NO_CONTACTO, PROYECTO, DIRECTOR, CELULAR, TELEFONO, DIRECCION, NO_AVALUOS, ESTADO, OBSERVACION ) VALUES ('";
+                insertInto += $("#no_contacto").val() + "', '" + $("#proyecto").val() + "', '";
                 insertInto += $("#director").val() + "', '" + $("#celular").val() + "', ' ";
                 insertInto += $("#telefono").val() + "', '" + $("#direccion").val() + "', ";
                 insertInto += $("#no_avaluos").val() + ", '" + $("#estado").val() + "', ' ";
                 insertInto += $("#observacion").val() + "')";
-                
                 tx.executeSql(insertInto);
 
             }
@@ -168,7 +167,7 @@
                         <label for="no_contacto">
                             * No. Contrato (Este campo es obligatorio!)
                         </label>
-                        <input name="" id="no_contacto" required="required" placeholder="Escriba texto aquí..." value="" type="number" />
+                        <input name="" id="no_contacto" required="required" placeholder="Escriba texto aquí..." value="" type="text" />
                     </fieldset>
                 </div>
                 <div data-role="fieldcontain">
@@ -216,7 +215,7 @@
                         <label for="no_avaluos">
                             No. Avaluos
                         </label>
-                        <input name="" id="no_avaluos" required="required" placeholder="Número de avaluos..." value="" type="number" />
+                        <input name="" id="no_avaluos" required="required" placeholder="Número de avaluos..." value="0" type="number" />
                     </fieldset>
                 </div>
                 <div data-role="fieldcontain">
@@ -224,8 +223,7 @@
                         <label for="observacion">
                             Observación
                         </label>
-                        <textarea name="" id="observacion" placeholder="Texto aquí...">
-                        </textarea>
+                        <textarea name="" id="observacion" placeholder="Texto aquí..."></textarea>
                     </fieldset>
                 </div>
                 <div data-role="fieldcontain">

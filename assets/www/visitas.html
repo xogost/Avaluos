@@ -225,7 +225,7 @@
 
                   arrayOrden.push(result.rows.item(i).ORDEN);
                 };
-                $("#images").append(html);
+                $("#images").html(html);
                 $("#images").listview('refresh');
             }
 
@@ -241,7 +241,7 @@
                 <h4>
                     Visitas
                 </h4>
-                <a data-role="button" data-rel="back" data-transition="fade" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
+                <a data-role="button" rel="external" data-transition="fade" data-theme="c" href="menu.html" data-icon="arrow-l" data-iconpos="left" class="ui-btn-left">
                     Atras
                 </a>
             </div>
@@ -278,8 +278,8 @@
                         <input name="" id="nombre" placeholder="Nombre Imagen..." value="" type="text" />
                     </fieldset>
                 </div>
-                <input type="submit" id="guardar" onclick="saveInsert();" data-icon="plus" data-iconpos="left" value="Guardar" />
-                <input type="submit" id="borrar" onclick="dropVisita();" data-icon="minus" data-iconpos="left" value="Eliminar" />
+                <!--<input type="submit" id="guardar" onclick="saveInsert();" data-icon="plus" data-iconpos="left" value="Guardar" />
+                <input type="submit" id="borrar" onclick="dropVisita();" data-icon="minus" data-iconpos="left" value="Eliminar" />-->
                 <br/>
                 <div data-role="fieldcontain">
                     <div data-role="content">

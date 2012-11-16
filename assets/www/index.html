@@ -82,8 +82,15 @@
 			alert("Error BD: " + error.code);
 		}
 		function login() {
-			var db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
-			db.transaction( queryUsuarios, errorDB);
+                    //$.ajax({
+                    //    url: "http://74.207.234.233:9512/frentes/login.php",
+                    //    data: {"nickname": $("#usernamet").val(), "clave": $("#passwordt").val()},
+                    //    type: "POST",
+                    //    success: function(result){alert(result); console.log(result);},
+                    //    error: function(error){alert(error);}
+                    //});
+                    var db = window.openDatabase("AvaluosDB", "1.0", "Avaluos DB", 200000);
+                    db.transaction( queryUsuarios, errorDB);
 		}
 		//evento onDeviceReady
 		function onDeviceReady () {
@@ -93,7 +100,7 @@
 	</script>
 
 </head> 
-<body style="width=100%; height: 100%;"> 
+<body style="width:100%; height: 100%;"> 
 
 <div data-role="page">
 
@@ -104,9 +111,9 @@
 	<div id="content" data-role="content">
 		<div id="lock"><img src="img/LOGOLONJA.GIF" /></div>
 		<h2>Nombre de Usuario</h2>
-		<input type="text" name="usernamet" id="usernamet"></input>
+		<input type="text" name="usernamet" id="usernamet"/>
 		<h2>Contraseña</h2>
-		<input type="password" name="passwordt" id="passwordt"></input>
+		<input type="password" name="passwordt" id="passwordt"/>
 		<br/>
 		<button data-role="button" onclick="login();" data-icon="home" data-theme="a">Iniciar Sesion</button>
 	</div><!-- /content -->
